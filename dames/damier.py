@@ -1,6 +1,3 @@
-#! /usr/bin/env python
-# -*- coding:Utf-8 -*-
-
 __author__ = "Jean-Francis Roy"
 from piece import Piece
 
@@ -28,8 +25,11 @@ class Damier:
         :type position: Tuple de coordonnées matricielles (ligne, colonne).
         :return: La pièce à cette position s'il y en a une, None autrement.
         """
-        pass
-
+        if (position in self.cases):
+            return self.cases[(position)]
+        else:
+            return None
+     
     def position_valide(self, position):
         """
         Vérifie si une position est valide (chaque coordonnée doit être dans les bornes).
@@ -38,7 +38,13 @@ class Damier:
         :type position: tuple de deux éléments
         :return: True si la position est valide, False autrement
         """
-        pass
+        if(isinstance(position[0],int) and isinstance(position[1],int)): # verification que c'est un int
+            if(position[0] >= 0 and position[0] <8 and position[1] >=0 and position[1] <8): # verification que le chiffre est dans le damier
+                if not(damier.get_piece(position)): # verification si la case est vide
+                    return True
+            else:
+                return False
+        
 
     def lister_deplacements_possibles_a_partir_de_position(self, position, doit_prendre=False):
         """
@@ -61,7 +67,34 @@ class Damier:
         :type doit_prendre: Booléen.
         :return: Une liste de positions où il est possible de se déplacer depuis la position "position".
         """
-        pass
+        #on crée les 4 possibilité et on vérifie leur possibilite 
+        possibiliteNonVerifie = ((position[0]+1,position[1]+1),(position[0]+1,position[1]-1),(position[0]-1,position[1]+1),(position[0]-1,position[1]-1))
+        print (position,possibiliteNonVerifie)
+        possibilite = list()
+        
+        for i,j in possibiliteNonVerifie:
+            if (damier.position_valide((i,j)) and doit_prendre == False):
+                possibilite.append((i,j))
+            elif (damier.get_piece((i,j))):
+                nouvellepossibiliteNonVerifie = ((i+1,j+1),(i+1,j-1),(i-1,j+1),(i-1,j-1))
+                for x,y in nouvellepossibiliteNonVerifie:
+                    if(damier.position_valide((x,y))):
+                        possibilite.append((x,y))
+                        
+                
+                
+        print (possibilite)
+        
+        """
+        problème présent : 
+            si on sait pas la couleur de la pièces, comment on sait si on avance ou pas. Donc à quoi ca sert de savoir si c'est un pion ou une dame?
+            Comment on fait pour savoir la couleur d'une pièces, autre qu'en regardant le code unicode.
+         """   
+            
+        
+        
+             
+        
 
     def lister_deplacements_possibles_de_couleur(self, couleur, doit_prendre=False):
         """
@@ -77,6 +110,24 @@ class Damier:
                              résultants de la prise d'une pièce adverse.
         :return: Une liste de positions où les pièces de couleur "couleur" peuvent de se déplacer.
         """
+        
+        #couleur = ""
+        #typePion = ""
+        #verification si c'est un pion ou une dame et sa couleur (Je sais pas si c'est mon système, mais je peux pas verifier la pièce directement
+        #if (str(self.cases[(position)]).encode(encoding='utf_8') == str(Piece("blanc", "pion")).encode(encoding='utf_8')):
+        #    couleur,typePion = "blanc","pion"
+        #elif (str(self.cases[(position)]).encode(encoding='utf_8') == str(Piece("blanc", "dame")).encode(encoding='utf_8')):
+        #    couleur,typePion = "blanc","dame"
+        #elif (str(self.cases[(position)]).encode(encoding='utf_8') == str(Piece("noir", "pion")).encode(encoding='utf_8')):
+        #    couleur,typePion = "noir","pion"
+        #else: 
+        #    couleur,typePion = "noir","dame"
+        #print(couleur,typePion) # Verification de la couleur et du type
+        
+        #pion noir ne peut que descendre
+        #pion blanc ne peut que monter
+        
+        
         pass
 
     def deplacer(self, position_source, position_cible):
@@ -178,4 +229,10 @@ if __name__ == "__main__":
     # Ceci n'est pas le point d'entrée du programme principal, mais il vous permettra de faire de petits tests avec
     # vos fonctions du damier.
     damier = Damier()
+    position = (5,4)
+    print("la position est valide? : ", damier.position_valide(position))
+    thisPiece = damier.get_piece(position)
+    print("la pi�ce est : ", thisPiece)
+    damier.lister_deplacements_possibles_a_partir_de_position(position)
+            
     print(damier)
