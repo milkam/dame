@@ -40,8 +40,7 @@ class Damier:
         """
         if(isinstance(position[0],int) and isinstance(position[1],int)): # verification que c'est un int
             if(position[0] >= 0 and position[0] <8 and position[1] >=0 and position[1] <8): # verification que le chiffre est dans le damier
-                if not(damier.get_piece(position)): # verification si la case est vide
-                    return True
+                return True
             else:
                 return False
         
@@ -67,35 +66,42 @@ class Damier:
         :type doit_prendre: Booléen.
         :return: Une liste de positions où il est possible de se déplacer depuis la position "position".
         """
-        #on crée les 4 possibilité et on vérifie leur possibilite 
-        possibiliteNonVerifie = ((position[0]+1,position[1]+1),(position[0]+1,position[1]-1),(position[0]-1,position[1]+1),(position[0]-1,position[1]-1))
-        print (position,possibiliteNonVerifie)
+        #verification si c'est une dame ou un pion et creation des diagonale possible pour chacune d'elle
         possibilite = list()
+        piece = self.cases[position]
+        lig = position[0]
+        col = position[1]
         
-        for i,j in possibiliteNonVerifie:
-            if (damier.position_valide((i,j)) and doit_prendre == False):
-                possibilite.append((i,j))
-            elif (damier.get_piece((i,j))):
-                nouvellepossibiliteNonVerifie = ((i+1,j+1),(i+1,j-1),(i-1,j+1),(i-1,j-1))
-                for x,y in nouvellepossibiliteNonVerifie:
-                    if(damier.position_valide((x,y))):
-                        possibilite.append((x,y))
-                        
-                
-                
-        print (possibilite)
-        
-        """
-        problème présent : 
-            si on sait pas la couleur de la pièces, comment on sait si on avance ou pas. Donc à quoi ca sert de savoir si c'est un pion ou une dame?
-            Comment on fait pour savoir la couleur d'une pièces, autre qu'en regardant le code unicode.
-         """   
-            
+        #on crée les 4 possibilité et on vérifie leur possibilite 
+        possibiliteNonVerifie = ((lig+1,col+1),(lig+1,col-1),(lig-1,col+1),(lig-1,col-1))
         
         
-             
+        for lig1,col1 in possibiliteNonVerifie: # iteration dans les possibilité
+            # verification si la position est valide, si on doit prendre piece, et si il y a pas de piece a cette position
+            if (self.position_valide((lig1,col1)) and doit_prendre == False and not self.get_piece((lig1,col1))): 
+                if(piece.est_pion() and piece.est_blanc() and lig1<lig): # on verifie si c'est un pion blanc on peut juste monter
+                    possibilite.append((lig1,col1))
+                elif(piece.est_pion() and piece.est_noir() and lig1>lig):# on verifie si c'est un pion noir on peut juste descendre
+                    possibilite.append((lig1,col1))
+                elif(piece.est_dame()):
+                    possibilite.append((lig1,col1))
+  
+            elif (self.get_piece((lig1,col1))): # si la position était invalide ou il y avait une piece ou on doit prendre, on regarde si cette position il y a une piece
+                nouvPiece = self.cases[(lig1,col1)] # on assigne la piece à nouvPiece pous la piece à etre mangé
+                if (nouvPiece.couleur != piece.couleur): # si la piece dans le chemin est pas de la même couleur, on peut la manger
+                    if (lig1>lig and col1>col): lig2,col2 = (lig1+1,col1+1) #on doit rester sur la même trajectoir quand on saute sur une piece
+                    elif (lig1>lig and col1<col): lig2,col2 = (lig1+1,col1-1)
+                    elif (lig1<lig and col1>col): lig2,col2 = (lig1-1,col1+1)
+                    elif (lig1<lig and col1<col): lig2,col2 = (lig1-1,col1-1)
+                    if(self.position_valide((lig2,col2)) and not self.get_piece((lig2,col2))): # si la nouvelle destination est valide et qu'elle a pas de piece on l'ajoute
+                        possibilite.append((lig2,col2))
+ 
+        if (possibilite):        
+            return possibilite
+        else:
+            return None
         
-
+   
     def lister_deplacements_possibles_de_couleur(self, couleur, doit_prendre=False):
         """
         Fonction retournant la liste des positions (déplacements) possibles des pièces d'une certaine couleur. Encore
@@ -110,25 +116,18 @@ class Damier:
                              résultants de la prise d'une pièce adverse.
         :return: Une liste de positions où les pièces de couleur "couleur" peuvent de se déplacer.
         """
+        possibilite = list()
         
-        #couleur = ""
-        #typePion = ""
-        #verification si c'est un pion ou une dame et sa couleur (Je sais pas si c'est mon système, mais je peux pas verifier la pièce directement
-        #if (str(self.cases[(position)]).encode(encoding='utf_8') == str(Piece("blanc", "pion")).encode(encoding='utf_8')):
-        #    couleur,typePion = "blanc","pion"
-        #elif (str(self.cases[(position)]).encode(encoding='utf_8') == str(Piece("blanc", "dame")).encode(encoding='utf_8')):
-        #    couleur,typePion = "blanc","dame"
-        #elif (str(self.cases[(position)]).encode(encoding='utf_8') == str(Piece("noir", "pion")).encode(encoding='utf_8')):
-        #    couleur,typePion = "noir","pion"
-        #else: 
-        #    couleur,typePion = "noir","dame"
-        #print(couleur,typePion) # Verification de la couleur et du type
+        for keys in self.cases.keys(): # on regarde toute les piece présente.
+            piece = self.cases[keys]
+            if (piece.couleur == couleur): # si la couleur demandé est celle de la piece courrante, on continue
+                if (self.lister_deplacements_possibles_a_partir_de_position(keys,doit_prendre)):
+                    possibilite.extend(self.lister_deplacements_possibles_a_partir_de_position(keys,doit_prendre)) #on ajoute aux possibilité cette possibilite si c'est possible
         
-        #pion noir ne peut que descendre
-        #pion blanc ne peut que monter
-        
-        
-        pass
+        if (possibilite):
+            return possibilite
+        else:
+            return None
 
     def deplacer(self, position_source, position_cible):
         """
@@ -189,15 +188,15 @@ class Damier:
         self.cases[(6, 1)] = Piece("blanc", "pion")
         self.cases[(6, 3)] = Piece("blanc", "pion")
         self.cases[(6, 5)] = Piece("blanc", "pion")
-        self.cases[(6, 7)] = Piece("blanc", "pion")
+        self.cases[(3, 6)] = Piece("blanc", "pion")
         self.cases[(5, 0)] = Piece("blanc", "pion")
         self.cases[(5, 2)] = Piece("blanc", "pion")
-        self.cases[(5, 4)] = Piece("blanc", "pion")
+        self.cases[(4, 3)] = Piece("blanc", "pion")
         self.cases[(5, 6)] = Piece("blanc", "pion")
         self.cases[(2, 1)] = Piece("noir", "pion")
-        self.cases[(2, 3)] = Piece("noir", "pion")
-        self.cases[(2, 5)] = Piece("noir", "pion")
-        self.cases[(2, 7)] = Piece("noir", "pion")
+        self.cases[(3, 4)] = Piece("noir", "pion")
+        self.cases[(4, 5)] = Piece("noir", "pion")
+        self.cases[(3, 0)] = Piece("noir", "pion")
         self.cases[(1, 0)] = Piece("noir", "pion")
         self.cases[(1, 2)] = Piece("noir", "pion")
         self.cases[(1, 4)] = Piece("noir", "pion")
@@ -229,10 +228,12 @@ if __name__ == "__main__":
     # Ceci n'est pas le point d'entrée du programme principal, mais il vous permettra de faire de petits tests avec
     # vos fonctions du damier.
     damier = Damier()
-    position = (5,4)
-    print("la position est valide? : ", damier.position_valide(position))
+    print(damier)
+    position = (5,6)
+    print("la position: ",position, " est valide? : ", damier.position_valide(position))
     thisPiece = damier.get_piece(position)
     print("la pi�ce est : ", thisPiece)
-    damier.lister_deplacements_possibles_a_partir_de_position(position)
+    print(damier.lister_deplacements_possibles_a_partir_de_position(position,True))
+    print(damier.lister_deplacements_possibles_de_couleur("blanc",False))
             
-    print(damier)
+    
