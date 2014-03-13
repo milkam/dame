@@ -1,7 +1,12 @@
 #! /usr/bin/env python
 # -*- coding:Utf-8 -*-
+'''
 
-__author__ = "Jean-Francis Roy"
+Created on 2014-03-10
+
+@author: Michel Tremblay #111092463
+'''
+__author__ = "Michel Tremblay NI 111092463"
 from piece import Piece
 
 
