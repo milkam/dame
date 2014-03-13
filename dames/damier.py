@@ -1,3 +1,6 @@
+#! /usr/bin/env python
+# -*- coding:Utf-8 -*-
+
 __author__ = "Jean-Francis Roy"
 from piece import Piece
 
@@ -151,20 +154,63 @@ class Damier:
         :return: "ok" si le déplacement a été effectué sans prise, "prise" si une pièce adverse a été prise, et
                  "erreur" autrement.
         """
-        pass
-
+        piece = self.get_piece(position_source)
+        prise = False
+        deplacement = False
+        if(piece):
+            if(position_cible in self.lister_deplacements_possibles_a_partir_de_position(position_source)):
+                self.cases[(position_cible)]= self.cases[(position_source)]
+                #on met a la position cible la position source
+                del self.cases[(position_source)] 
+                deplacement = True
+                if(abs(position_cible[0]-position_source[0])>1 and abs(position_cible[1]-position_source[1])>1): # verification si la pièces à bougé de plus d'une case si oui elle a mangé
+                    prise = True
+                    #recherche du point entre les 2, (la pièces qui a été mangé)
+                    lig=(position_source[0]+position_cible[0])/2
+                    col=(position_source[1]+position_cible[1])/2
+                    del self.cases[(lig,col)]# enleve la pièce qui était dedans par un espace vide
+                
+        if(prise and deplacement):
+            return "prise"
+        elif(deplacement):
+            return "ok"
+        else:
+            return "erreur"
+            
+        
+        
+        
     def convertir_en_chaine(self):
         """
         Retourne une chaîne de caractères où chaque case est écrite sur une ligne distincte.
         Chaque ligne contient l'information suivante :
         ligne,colonne,couleur,type
-
+        
         Cette méthode pourrait par la suite être réutilisée pour sauvegarder un damier dans un fichier.
 
         :return: La chaîne de caractères.
         """
-        pass
-
+        chaine = ""
+        
+        for i in range(0, 8):
+            for j in range(0, 8):
+                typeDePiece = ""
+                couleur = ""
+                piece = self.get_piece((i,j))
+                if(piece):
+                    couleur = piece.couleur
+                    if(piece.est_pion()):
+                        typeDePiece = "pion"
+                    else:
+                        typeDePiece = "dame"
+                case = (str(i),str(j),couleur,typeDePiece)
+                for string in case:
+                    if (string):
+                        chaine += string+","
+                chaine = chaine[:-1] + "\n"
+        return chaine
+                    
+    
     def charger_dune_chaine(self, chaine):
         """
         Remplit le damier à partir d'une chaîne de caractères comportant l'information d'une pièce sur chaque ligne.
@@ -174,8 +220,17 @@ class Damier:
         :param chaine: La chaîne de caractères.
         :type chaine: string
         """
-        pass
-
+        self.cases.clear() # on vide le damier
+        cases = (chaine.split('\n')) #on sépare les ligne dans une list
+        for case in cases: # on itere sur chacune des case
+            thisCase = case.split(',') # on creer une liste à partir d'une case
+            if(len(thisCase)==4): # si la case comporte un pion ou une dame elle comportera 4 éléments
+                position = (int(thisCase[0]),int(thisCase[1]))
+                couleur = thisCase[2]
+                typeDePiece = thisCase[3]
+                self.cases[position] = Piece(couleur,typeDePiece)    # on instencie les pièce à leur position
+                    
+        
     def initialiser_damier_par_default(self):
         """
         Initialise un damier de base avec la position initiale des pièces.
@@ -188,15 +243,15 @@ class Damier:
         self.cases[(6, 1)] = Piece("blanc", "pion")
         self.cases[(6, 3)] = Piece("blanc", "pion")
         self.cases[(6, 5)] = Piece("blanc", "pion")
-        self.cases[(3, 6)] = Piece("blanc", "pion")
+        self.cases[(6, 7)] = Piece("blanc", "pion")
         self.cases[(5, 0)] = Piece("blanc", "pion")
         self.cases[(5, 2)] = Piece("blanc", "pion")
-        self.cases[(4, 3)] = Piece("blanc", "pion")
+        self.cases[(5, 4)] = Piece("blanc", "pion")
         self.cases[(5, 6)] = Piece("blanc", "pion")
         self.cases[(2, 1)] = Piece("noir", "pion")
-        self.cases[(3, 4)] = Piece("noir", "pion")
-        self.cases[(4, 5)] = Piece("noir", "pion")
-        self.cases[(3, 0)] = Piece("noir", "pion")
+        self.cases[(2, 3)] = Piece("noir", "pion")
+        self.cases[(2, 5)] = Piece("noir", "pion")
+        self.cases[(2, 7)] = Piece("noir", "pion")
         self.cases[(1, 0)] = Piece("noir", "pion")
         self.cases[(1, 2)] = Piece("noir", "pion")
         self.cases[(1, 4)] = Piece("noir", "pion")
@@ -227,13 +282,22 @@ class Damier:
 if __name__ == "__main__":
     # Ceci n'est pas le point d'entrée du programme principal, mais il vous permettra de faire de petits tests avec
     # vos fonctions du damier.
+    
     damier = Damier()
     print(damier)
-    position = (5,6)
-    print("la position: ",position, " est valide? : ", damier.position_valide(position))
-    thisPiece = damier.get_piece(position)
-    print("la pi�ce est : ", thisPiece)
-    print(damier.lister_deplacements_possibles_a_partir_de_position(position,True))
-    print(damier.lister_deplacements_possibles_de_couleur("blanc",False))
-            
+    #sauvegarde = damier.convertir_en_chaine()
+    #position = (5,6)
+    #print("la position: ",position, " est valide? : ", damier.position_valide(position))
+    #thisPiece = damier.get_piece(position)
+    #print("la pi�ce est : ", thisPiece)
+    #print(damier.lister_deplacements_possibles_a_partir_de_position(position,True))
+    #print(damier.lister_deplacements_possibles_de_couleur("blanc",False))
+    #print(damier.deplacer((4,3), (2,5))) 
+    #print(damier.deplacer((2,1),(3,2)))
+    #input()
+    #print(damier)
+    #input()
+    #damier.charger_dune_chaine(sauvegarde)
+    #print(damier)
+    #print(damier.convertir_en_chaine())
     
