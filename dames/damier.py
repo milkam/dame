@@ -76,39 +76,41 @@ class Damier:
         """
         #verification si c'est une dame ou un pion et creation des diagonale possible pour chacune d'elle
         possibilite = list()
-        piece = self.cases[position]
-        lig = position[0]
-        col = position[1]
         
-        #on crée les 4 possibilité et on vérifie leur possibilite 
-        possibiliteNonVerifie = ((lig+1,col+1),(lig+1,col-1),(lig-1,col+1),(lig-1,col-1))
+        piece = self.get_piece(position)
+        if (piece):
+            lig = position[0]
+            col = position[1]
+        
+            #on crée les 4 possibilité et on vérifie leur possibilite 
+            possibiliteNonVerifie = ((lig+1,col+1),(lig+1,col-1),(lig-1,col+1),(lig-1,col-1))
         
         
-        for lig1,col1 in possibiliteNonVerifie: # iteration dans les possibilité
-            # verification si la position est valide, si on doit prendre piece, et si il y a pas de piece a cette position
-            if (self.position_valide((lig1,col1)) and doit_prendre == False and not self.get_piece((lig1,col1))): 
-                if(piece.est_pion() and piece.est_blanc() and lig1<lig): # on verifie si c'est un pion blanc on peut juste monter
-                    possibilite.append((lig1,col1))
-                elif(piece.est_pion() and piece.est_noir() and lig1>lig):# on verifie si c'est un pion noir on peut juste descendre
-                    possibilite.append((lig1,col1))
-                elif(piece.est_dame()):
-                    possibilite.append((lig1,col1))
-  
-            elif (self.get_piece((lig1,col1))): # si la position était invalide ou il y avait une piece ou on doit prendre, on regarde si cette position il y a une piece
-                nouvPiece = self.cases[(lig1,col1)] # on assigne la piece à nouvPiece pous la piece à etre mangé
-                if (nouvPiece.couleur != piece.couleur): # si la piece dans le chemin est pas de la même couleur, on peut la manger
-                    if (lig1>lig and col1>col): lig2,col2 = (lig1+1,col1+1) #on doit rester sur la même trajectoir quand on saute sur une piece
-                    elif (lig1>lig and col1<col): lig2,col2 = (lig1+1,col1-1)
-                    elif (lig1<lig and col1>col): lig2,col2 = (lig1-1,col1+1)
-                    elif (lig1<lig and col1<col): lig2,col2 = (lig1-1,col1-1)
-                    if(self.position_valide((lig2,col2)) and not self.get_piece((lig2,col2))): # si la nouvelle destination est valide et qu'elle a pas de piece on l'ajoute
-                        possibilite.append((lig2,col2))
- 
-        if (possibilite):        
-            return possibilite
+            for lig1,col1 in possibiliteNonVerifie: # iteration dans les possibilité
+                # verification si la position est valide, si on doit prendre piece, et si il y a pas de piece a cette position
+                if (self.position_valide((lig1,col1)) and doit_prendre == False and not self.get_piece((lig1,col1))): 
+                    if(piece.est_pion() and piece.est_blanc() and lig1<lig): # on verifie si c'est un pion blanc on peut juste monter
+                        possibilite.append((lig1,col1))
+                    elif(piece.est_pion() and piece.est_noir() and lig1>lig):# on verifie si c'est un pion noir on peut juste descendre
+                        possibilite.append((lig1,col1))
+                    elif(piece.est_dame()):
+                        possibilite.append((lig1,col1))
+      
+                elif (self.get_piece((lig1,col1))): # si la position était invalide ou il y avait une piece ou on doit prendre, on regarde si cette position il y a une piece
+                    nouvPiece = self.cases[(lig1,col1)] # on assigne la piece à nouvPiece pous la piece à etre mangé
+                    if (nouvPiece.couleur != piece.couleur): # si la piece dans le chemin est pas de la même couleur, on peut la manger
+                        if (lig1>lig and col1>col): lig2,col2 = (lig1+1,col1+1) #on doit rester sur la même trajectoir quand on saute sur une piece
+                        elif (lig1>lig and col1<col): lig2,col2 = (lig1+1,col1-1)
+                        elif (lig1<lig and col1>col): lig2,col2 = (lig1-1,col1+1)
+                        elif (lig1<lig and col1<col): lig2,col2 = (lig1-1,col1-1)
+                        if(self.position_valide((lig2,col2)) and not self.get_piece((lig2,col2))): # si la nouvelle destination est valide et qu'elle a pas de piece on l'ajoute
+                            possibilite.append((lig2,col2))
+     
+            if (possibilite):        
+                return possibilite
         else:
             return None
-        
+    
    
     def lister_deplacements_possibles_de_couleur(self, couleur, doit_prendre=False):
         """
@@ -283,6 +285,80 @@ class Damier:
 
         return s
 
+    def test_get_piece(self):
+        erreurvalide = "Erreur, La position devrait pas être valide"
+        erreurinvalide = "Erreur, La position ne devrait pas être valide"
+        assert self.get_piece((0,0)) is None, erreurinvalide
+        assert self.get_piece((6,1)), erreurvalide
+        assert self.get_piece((-1,5)) is None, erreurinvalide
+        assert self.get_piece((7,-2)) is None, erreurinvalide
+        assert self.get_piece((1,2)), erreurvalide
+    
+    def test_position_valide(self):
+        erreurvalide = "Erreur, La position devrait pas être valide"
+        erreurinvalide = "Erreur, La position ne devrait pas être valide"
+        assert self.position_valide((0,0)), erreurvalide
+        assert self.position_valide((7,7)), erreurvalide
+        assert self.position_valide((-1,0)) is False, erreurinvalide
+        assert self.position_valide((0,-1)) is False, erreurinvalide
+        assert self.position_valide((8,0)) is False, erreurinvalide
+        assert self.position_valide((0,8)) is False, erreurinvalide
+        
+    def test_lister_deplacements_possibles_a_partir_de_position(self):
+        erreurnonpresent = "Erreur, La position devrait etre presente"
+        erreurpresent = "Erreur, La position ne devrait pas être presente"
+        possible = self.lister_deplacements_possibles_a_partir_de_position((6,0)) # on test que si on load une position invalide ca nous donne rien
+        assert possible is None, erreurpresent
+        possible = self.lister_deplacements_possibles_a_partir_de_position((0,1)) #test aucune position possible coin
+        assert possible is None, erreurpresent
+        possible = self.lister_deplacements_possibles_a_partir_de_position((2,1)) #test avancement normal
+        assert (3,0) in possible, erreurnonpresent
+        assert (3,2) in possible, erreurnonpresent
+        assert (len(possible) == 2), erreurpresent
+        possible = self.lister_deplacements_possibles_a_partir_de_position((2,1),True) #test si on force a manger mais ya rien a manger
+        assert possible is None, erreurpresent
+        possible = self.lister_deplacements_possibles_a_partir_de_position((5,0)) # test bord de damier juste une possibilite
+        assert (4,1) in possible, erreurnonpresent
+        assert (3,2) not in possible, erreurpresent
+        assert (len(possible) == 1), erreurpresent
+        self.deplacer((5,0),(4,1)) # on deplace un pion pour  tester qu'on peut pas reculer
+        possible = self.lister_deplacements_possibles_a_partir_de_position((4,1)) # on a juste 2 possibilite d'avancement?
+        assert (3,0) in possible, erreurnonpresent
+        assert (3,2) in possible, erreurnonpresent
+        assert (len(possible) == 2), erreurpresent
+        self.deplacer((4,1),(3,2)) # on deplace pret d'un ennemi
+        possible = self.lister_deplacements_possibles_a_partir_de_position((2,1)) # on test si les position sont ok quand on peut sauter
+        assert (3,0) in possible, erreurnonpresent
+        assert (3,2) not in possible, erreurpresent
+        assert (4,3) in possible, erreurnonpresent
+        assert (len(possible) == 2), erreurpresent
+        possible = self.lister_deplacements_possibles_a_partir_de_position((2,1),True) # on test qu'on ne recoit que ce qu'ont peut manger
+        assert (4,3) in possible, erreurnonpresent
+        assert (len(possible) == 1), erreurpresent
+        piece = self.get_piece((3,2))
+        piece.promouvoir()
+        possible = self.lister_deplacements_possibles_a_partir_de_position((3,2)) # on test qu'une dame peut reculet
+        assert (4,1) in possible, erreurnonpresent
+        assert (4,3) in possible, erreurnonpresent
+        assert (len(possible) == 2), erreurpresent
+        self.deplacer((3,2), (4,1))
+        possible = self.lister_deplacements_possibles_a_partir_de_position((4,1)) # on test qu'une dame peut reculer et avancer (3 possibilite)
+        assert (5,0) in possible, erreurnonpresent
+        assert (3,0) in possible, erreurnonpresent
+        assert (3,2) in possible, erreurnonpresent
+        assert (len(possible) == 3), erreurpresent
+        
+        
+        
+        
+        
+         
+        
+                    
+                                    
+        
+        
+
 
 if __name__ == "__main__":
     # Ceci n'est pas le point d'entrée du programme principal, mais il vous permettra de faire de petits tests avec
@@ -290,6 +366,10 @@ if __name__ == "__main__":
     
     damier = Damier()
     print(damier)
+    damier.test_get_piece()
+    damier.test_position_valide()
+    damier.test_lister_deplacements_possibles_a_partir_de_position()
+    
     #sauvegarde = damier.convertir_en_chaine()
     #position = (5,6)
     #print("la position: ",position, " est valide? : ", damier.position_valide(position))
