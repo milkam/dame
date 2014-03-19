@@ -1,4 +1,13 @@
-__author__ = "Jean-Francis Roy"
+#! /usr/bin/env python
+# -*- coding:Utf-8 -*-
+'''
+
+Created on 2014-03-10
+
+@author: Jean-Francois Paty #906250500
+'''
+__author__ = "Jean-François Paty #906250500"
+
 from damier import Damier
 
 
@@ -37,13 +46,13 @@ class Partie:
                  deuxième élément est un éventuel message d'erreur.
         """
         """# vérifie que la saisie est dans les bornes du damier:"""
+        
         good_source=False
         msg=""
         if not self.damier.position_valide(position_source):
             msg="saisie de la source en dehors du Damier" # vérifie que la saisie est dans les bornes du damier
             good_source=False
-            
-        #""contient une piece à la source de la bonne couleur? :"""
+        #Contient une piece à la source de la bonne couleur? :
         elif self.damier.get_piece(position_source)==None or self.damier.cases[position_source].couleur!=self.couleur_joueur_courant:
             msg="Pas de piece à cette place de votre couleur"
             good_source=False
@@ -53,13 +62,9 @@ class Partie:
         #La piece choisi permet -elle de faire une prise qui est obligatoire?:
         elif self.doit_prendre and self.damier.lister_deplacements_possibles_a_partir_de_position(position_source,True)==None:
             msg="Vous devez prendre une piece adverse"
-            #print("liste doit prendre ",self.damier.lister_deplacements_possibles_de_couleur(self.couleur_joueur_courant, True))
-        #La piece choisi est-elle celle avec une prise supplémentaire?:
-        #elif self.doit_prendre and self.position_source_forcee!=position_source:
-           # msg="Vous devez continuer avec la même piece car il ya des prises supplémentaires"
+
         else: good_source=True
-            
-       
+
         return (good_source, msg) 
         
         
@@ -77,8 +82,8 @@ class Partie:
         if not self.damier.position_valide(position_cible):
             msg="saisie de la cible en dehors du Damier" # vérifie que la saisie est dans les bornes du damier
             good_cible=False
+        #Vérifie que la cible est une position valide:
         elif position_cible in self.damier.lister_deplacements_possibles_a_partir_de_position(position_source,False):
-            #print("liste dans valider position cible ",self.damier.lister_deplacements_possibles_a_partir_de_position(position_source,False))
             good_cible=True
         else:
             msg="Position cible impossible"
@@ -95,8 +100,7 @@ class Partie:
         good_source=["",""]
         """boucle sur la validation de la saisie position source"""
         while saisie==False:       
-            userInputSource=input("Joueur " + self.couleur_joueur_courant +  " entrez les positions sources une coordonnée ligne,colonne entre 0 et 7: ")
-            print(userInputSource)
+            userInputSource=input("Joueur avec Pions " + self.couleur_joueur_courant +  " entrez les positions sources (une coordonnée ligne,colonne entre 0 et 7): ")
         
             """Validation de la saisie de la source """
             try:
@@ -107,10 +111,9 @@ class Partie:
                 saisie=False
             else:
                 posSource=(int(userInputSource.split(',')[0]),int(userInputSource.split(',')[1])) # génére le tuple de coordonnées
-                good_source[0]=self.valider_position_source(posSource)[0]
-                good_source[1]=self.valider_position_source(posSource)[1]
-                           
-            if good_source[1]!="":
+                good_source[0]=self.valider_position_source(posSource)[0] #Vérifie que la source est valide
+                good_source[1]=self.valider_position_source(posSource)[1] #Récupére les messages suite à la vérification de la source
+            if not good_source[0]:
                 print("Saisie Incorrecte : ",good_source[1])
             else:
                 saisie=True
@@ -120,7 +123,7 @@ class Partie:
         good_cible=["",""]
         """boucle sur la validation de la saisie position cible"""
         while saisie==False:
-            userInputCible=input("Joueur " + self.couleur_joueur_courant +  " entrez les positions cibles une coordonnée ligne,colonne entre 0 et 7: ")
+            userInputCible=input("Joueur avec Pions " + self.couleur_joueur_courant +  " entrez les positions cibles (une coordonnée ligne,colonne entre 0 et 7: )")
             
             """Validation de la cible"""        
         
@@ -132,10 +135,10 @@ class Partie:
                 saisie=False
             else:
                 posCible=(int(userInputCible.split(',')[0]),int(userInputCible.split(',')[1])) # génére le tuple de coordonnées
-                good_cible[0]=self.valider_position_cible(posSource,posCible)[0]
-                good_cible[1]=self.valider_position_cible(posSource,posCible)[1]
+                good_cible[0]=self.valider_position_cible(posSource,posCible)[0] #Vérifie que la cible est valide
+                good_cible[1]=self.valider_position_cible(posSource,posCible)[1]#Récupére les messages suite à la vérification de la cible
             
-            if good_cible[1]!="":
+            if not good_cible[0]:
                 print("Saisie Incorrecte : ",good_cible[1])
             else:
                 saisie=True
@@ -162,7 +165,7 @@ class Partie:
         """Assigne self.doit_prendre à True si le joueur courant a la possibilité de prendre une pièce adverse
         """
         if self.damier.lister_deplacements_possibles_de_couleur(self.couleur_joueur_courant, True)!=None:
-            print("le joueur doit prendre") # Vérifie si le joueur doit prendre
+            print("Le joueur avec Pion ",self.couleur_joueur_courant," doit prendre") # Vérifie si le joueur doit prendre
             self.doit_prendre=True
             
                     
@@ -171,41 +174,26 @@ class Partie:
         position=self.demander_positions_deplacement()
         
         """Fait le déplacement de la piece :
-        """
-        """return: "ok" si le déplacement a été effectué sans prise, "prise" si une pièce adverse a été prise, et
-                 "erreur" autrement."""
+        """                 
         status=self.damier.deplacer(position[0], position[1])
         print("Status deplacement ",status)
-        print(self.damier)
+        print(self.damier) # Affichage du Damier aprés le déplacement
         
-        """Si une pièce a été prise lors du déplacement, c'est encore au tour du même joueur si celui-ci peut encore
-          prendre une pièce adverse en continuant son mouvement. Utilisez les membres self.doit_prendre et
-          self.position_source_forcee pour forcer ce prochain tour!
-        """
-        if status=="ok":
+        if status=="ok": #Si le déplacement est un succés, changement de joueur
             if self.couleur_joueur_courant=="blanc":
                 self.couleur_joueur_courant="noir"
             else:
                 self.couleur_joueur_courant="blanc"
+        """ si il y a eu une prise, vérification que le mouvement doit continuer avec cette piece : """
         if status=="prise" and self.damier.lister_deplacements_possibles_a_partir_de_position(position[1],True)!=None:
             self.position_source_forcee=position[1]
-        elif status=="prise":
+        elif status=="prise": #Si déplacement avec prise, changement de joueur:
             self.doit_prendre=False
             if self.couleur_joueur_courant=="blanc":
                 self.couleur_joueur_courant="noir"
             else:
                 self.couleur_joueur_courant="blanc"
-        
-    """    
-        if status=="prise" :
-            self.position_source_forcee=position
-        else:
-            if self.couleur_joueur_courant=="blanc":
-                self.couleur_joueur_courant="noir"
-            elif self.couleur_joueur_courant=="noir":
-                self.couleur_joueur_courant="blanc"
-    """ 
-        
+                
         
 
     def jouer(self):
@@ -215,7 +203,9 @@ class Partie:
 
         :return: La couleur ("noir", "blanc") du joueur gagnant.
         """
-        
+        #self.sauvegarder("test.txt")
+        #self.charger("test.txt")
+        print("Damier aprés charger \n",self.damier)
         while self.damier.lister_deplacements_possibles_de_couleur(self.couleur_joueur_courant, False)!=None:
             self.tour()
         if self.couleur_joueur_courant=="blanc":
@@ -235,8 +225,15 @@ class Partie:
         :param nom_fichier: Le nom du fichier où sauvegarder.
         :type nom_fichier: string.
         """
-        pass
-
+        
+        ofich=open(nom_fichier, 'w') # Va créer un nouveau fichier
+        ofich.write("{}\n".format(self.couleur_joueur_courant)) #Écris la couleur du joueur courant
+        ofich.write("{}\n".format(str(self.doit_prendre))) # Écris si le joueur courant doit prendre
+        ofich.write("{}\n".format(str(self.position_source_forcee))) # Écris la valeur de position_source_forcee
+        chaine=self.damier.convertir_en_chaine() #appel la méthode pour convertir le Damier en chaine
+        ofich.write("{}\n".format(chaine))# Ecris dans le fichier le damier
+        ofich.close() #Ferme le fichier
+        
     def charger(self, nom_fichier):
         """
         Charge une partie dans à partir d'un fichier. Le fichier a le même format que la méthode de sauvegarde.
@@ -244,12 +241,28 @@ class Partie:
         :param nom_fichier: Le nom du fichier à charger.
         :type nom_fichier: string.
         """
-        pass
-
+        
+        try:
+            ofich=open(nom_fichier, 'r')
+        except:
+            print("fichier inexistant")
+        else:
+            self.damier.cases.clear() # on vide le damier
+            self.couleur_joueur_courant=ofich.readline()# Lecture de la premiere ligne du fichier
+            self.doit_prendre=ofich.readline()# Lecture de la deuxime ligne du fichier
+            self.position_source_forcee=ofich.readline()# Lecture de la troisieme ligne du fichier
+            while 1: # Lecture du reste du fichier jusqu'à sa fin
+                ligne=ofich.readline()
+                if ligne=="": # Si on arrive à la fin du fichier on arrête
+                    break
+                self.damier.charger_dune_chaine(ligne) # chargement du Damier ligne par ligne
+            ofich.close() # Fermeture du fichier ouvert
+            
 
 if __name__ == "__main__":
     # Point d'entrée du programme. On initialise une nouvelle partie, et on appelle la méthode jouer().
     print(Damier())
+    
     partie = Partie()
 
     # Si on veut sauvegarder une partie.
