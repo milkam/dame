@@ -203,9 +203,7 @@ class Partie:
 
         :return: La couleur ("noir", "blanc") du joueur gagnant.
         """
-        #self.sauvegarder("test.txt")
-        #self.charger("test.txt")
-        print("Damier aprés charger \n",self.damier)
+       
         while self.damier.lister_deplacements_possibles_de_couleur(self.couleur_joueur_courant, False)!=None:
             self.tour()
         if self.couleur_joueur_courant=="blanc":
