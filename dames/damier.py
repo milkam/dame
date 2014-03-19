@@ -176,6 +176,16 @@ class Damier:
                     lig=(position_source[0]+position_cible[0])/2
                     col=(position_source[1]+position_cible[1])/2
                     del self.cases[(lig,col)]# enleve la pièce qui était dedans par un espace vide
+                if(position_cible[0]== 0 or position_cible[0]== 7):
+                    if(piece.couleur == "blanc" and position_cible[0]== 0):
+                        piece.promouvoir()
+                        print("La piece blanche à la position:",position_cible,"à été promu à Dame")
+                    elif(piece.couleur == "noir" and position_cible[0]== 7):
+                        piece.promouvoir()
+                        print("La piece noir à la position:",position_cible,"à été promu à Dame")
+            
+            
+        
                 
         if(prise and deplacement):
             return "prise"
@@ -227,7 +237,6 @@ class Damier:
         :param chaine: La chaîne de caractères.
         :type chaine: string
         """
-        self.cases.clear() # on vide le damier
         cases = (chaine.split('\n')) #on sépare les ligne dans une list
         for case in cases: # on itere sur chacune des case
             thisCase = case.split(',') # on creer une liste à partir d'une case
@@ -348,17 +357,7 @@ class Damier:
         assert (3,2) in possible, erreurnonpresent
         assert (len(possible) == 3), erreurpresent
         
-        
-        
-        
-        
-         
-        
-                    
-                                    
-        
-        
-
+   
 
 if __name__ == "__main__":
     # Ceci n'est pas le point d'entrée du programme principal, mais il vous permettra de faire de petits tests avec
@@ -366,9 +365,9 @@ if __name__ == "__main__":
     
     damier = Damier()
     print(damier)
-    damier.test_get_piece()
-    damier.test_position_valide()
-    damier.test_lister_deplacements_possibles_a_partir_de_position()
+    #damier.test_get_piece()
+    #damier.test_position_valide()
+    #damier.test_lister_deplacements_possibles_a_partir_de_position()
     
     #sauvegarde = damier.convertir_en_chaine()
     #position = (5,6)
