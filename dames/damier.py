@@ -176,7 +176,7 @@ class Damier:
                     lig=(position_source[0]+position_cible[0])/2
                     col=(position_source[1]+position_cible[1])/2
                     del self.cases[(lig,col)]# enleve la pièce qui était dedans par un espace vide
-                if(position_cible[0]== 0 or position_cible[0]== 7):
+                if((position_cible[0]== 0 or position_cible[0]== 7) and piece.est_dame()==False):
                     if(piece.couleur == "blanc" and position_cible[0]== 0):
                         piece.promouvoir()
                         print("La piece blanche à la position:",position_cible,"à été promu à Dame")
