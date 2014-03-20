@@ -30,11 +30,11 @@ class Partie:
     def valider_position_source(self, position_source):
         """
         Vérifie la validité de la position source, notamment:
-        - Est-ce que la position contient une pièce? ok
-        - Est-ce que cette pièce est de la bonne couleur? ok
+        - Est-ce que la position contient une pièce? 
+        - Est-ce que cette pièce est de la bonne couleur? 
         - Si le joueur doit absolument faire une prise, est-ce que la pièce choisie en la la possibilité?
         - Si le joueur doit absoluement continuer son mouvement avec une prise supplémentaire, a-t-il choisi la
-          bonne pièce? ok
+          bonne pièce? 
 
         ATTENTION: Utilisez self.couleur_joueur_courant, self.doit_prendre et self.position_source_forcee pour
                    connaître les informations nécessaires.
@@ -45,8 +45,7 @@ class Partie:
         :return: Un couple où le premier élément représente la validité de la position (True ou False), et le
                  deuxième élément est un éventuel message d'erreur.
         """
-        """# vérifie que la saisie est dans les bornes du damier:"""
-        
+    
         good_source=False
         msg=""
         if not self.damier.position_valide(position_source):
@@ -59,7 +58,7 @@ class Partie:
         #Est-il possible de faire un déplacement avec la piece choisie ?:
         elif self.damier.lister_deplacements_possibles_a_partir_de_position(position_source, False)==None:
             msg="Vous devez fournir une position source qui permet de faire un déplacement"
-        #La piece choisi permet -elle de faire une prise qui est obligatoire?:
+        #La piece choisi permet-elle de faire une prise qui est obligatoire?:
         elif self.doit_prendre and self.damier.lister_deplacements_possibles_a_partir_de_position(position_source,True)==None:
             msg="Vous devez prendre une piece adverse"
 
@@ -71,7 +70,7 @@ class Partie:
 
     def valider_position_cible(self, position_source, position_cible):
         """
-        Vérifie si oui ou non la position cible est valide, en fonction de la position source.ok
+        Vérifie si oui ou non la position cible est valide, en fonction de la position source.
         ATTENTION: Vous avez déjà programmé la méthode nécessaire dans le damier!
 
         :return: Un couple où le premier élément représente la validité de la position (True ou False), et le
@@ -82,7 +81,11 @@ class Partie:
         if not self.damier.position_valide(position_cible):
             msg="saisie de la cible en dehors du Damier" # vérifie que la saisie est dans les bornes du damier
             good_cible=False
-        #Vérifie que la cible est une position valide:
+        #Vérifie que la cible est une position valide et que le joueur doit prendre une piece:
+        elif self.doit_prendre and position_cible not in self.damier.lister_deplacements_possibles_a_partir_de_position(position_source,True):
+            msg="Vous devez prendre la piece adverse"
+            good_cible=False
+        #Vérifie que la cible est une position valide :
         elif position_cible in self.damier.lister_deplacements_possibles_a_partir_de_position(position_source,False):
             good_cible=True
         else:
@@ -110,9 +113,9 @@ class Partie:
                 good_source[1]="Vous devez suivre le modéle : ligne, colonne"
                 saisie=False
             else:
-                posSource=(int(userInputSource.split(',')[0]),int(userInputSource.split(',')[1])) # génére le tuple de coordonnées
-                good_source[0]=self.valider_position_source(posSource)[0] #Vérifie que la source est valide
-                good_source[1]=self.valider_position_source(posSource)[1] #Récupére les messages suite à la vérification de la source
+                posSource=(int(userInputSource.split(',')[0]),int(userInputSource.split(',')[1])) # Génére le tuple de coordonnées
+                good_source[0]=self.valider_position_source(posSource)[0] # Vérifie que la source est valide
+                good_source[1]=self.valider_position_source(posSource)[1] # Récupére les messages suite à la vérification de la source
             if not good_source[0]:
                 print("Saisie Incorrecte : ",good_source[1])
             else:
@@ -134,9 +137,9 @@ class Partie:
                 good_cible[1]="Vous devez suivre le modéle : ligne, colonne"
                 saisie=False
             else:
-                posCible=(int(userInputCible.split(',')[0]),int(userInputCible.split(',')[1])) # génére le tuple de coordonnées
-                good_cible[0]=self.valider_position_cible(posSource,posCible)[0] #Vérifie que la cible est valide
-                good_cible[1]=self.valider_position_cible(posSource,posCible)[1]#Récupére les messages suite à la vérification de la cible
+                posCible=(int(userInputCible.split(',')[0]),int(userInputCible.split(',')[1])) # Génére le tuple de coordonnées
+                good_cible[0]=self.valider_position_cible(posSource,posCible)[0] # Vérifie que la cible est valide
+                good_cible[1]=self.valider_position_cible(posSource,posCible)[1]# Récupére les messages suite à la vérification de la cible
             
             if not good_cible[0]:
                 print("Saisie Incorrecte : ",good_cible[1])
@@ -151,10 +154,10 @@ class Partie:
     def tour(self):
         """
         Cette méthode simule le tour d'un joueur, et doit effectuer les actions suivantes:
-        - Assigne self.doit_prendre à True si le joueur courant a la possibilité de prendre une pièce adverse. ok
+        - Assigne self.doit_prendre à True si le joueur courant a la possibilité de prendre une pièce adverse. 
           (utilisez une méthode que vous avez déjà programmée dans le damier!)
-        - Demander les positions source et cible (utilisez self.demander_positions_deplacement!) ok
-        - Effectuer le déplacement (à l'aide de la méthode du damier appropriée)ok
+        - Demander les positions source et cible (utilisez self.demander_positions_deplacement!) 
+        - Effectuer le déplacement (à l'aide de la méthode du damier appropriée)
         - Si une pièce a été prise lors du déplacement, c'est encore au tour du même joueur si celui-ci peut encore
           prendre une pièce adverse en continuant son mouvement. Utilisez les membres self.doit_prendre et
           self.position_source_forcee pour forcer ce prochain tour!
@@ -162,19 +165,16 @@ class Partie:
           tour du joueur adverse. Mettez à jour les membres de la classe en conséquence.
         """
         
-        """Assigne self.doit_prendre à True si le joueur courant a la possibilité de prendre une pièce adverse
-        """
+        #Assigne self.doit_prendre à True si le joueur courant a la possibilité de prendre une pièce adverse :
         if self.damier.lister_deplacements_possibles_de_couleur(self.couleur_joueur_courant, True)!=None:
             print("Le joueur avec Pion ",self.couleur_joueur_courant," doit prendre") # Vérifie si le joueur doit prendre
             self.doit_prendre=True
             
                     
-        """Demander les positions source et cible (utilisez self.demander_positions_deplacement!)
-        """
+        #Demande les positions source et cible pour un déplacement :
         position=self.demander_positions_deplacement()
         
-        """Fait le déplacement de la piece :
-        """                 
+        # Faire le déplacement de la piece :
         status=self.damier.deplacer(position[0], position[1])
         print("Status deplacement ",status)
         print(self.damier) # Affichage du Damier aprés le déplacement
@@ -184,7 +184,7 @@ class Partie:
                 self.couleur_joueur_courant="noir"
             else:
                 self.couleur_joueur_courant="blanc"
-        """ si il y a eu une prise, vérification que le mouvement doit continuer avec cette piece : """
+        #si il y a eu une prise, vérification que le mouvement doit continuer avec cette piece :
         if status=="prise" and self.damier.lister_deplacements_possibles_a_partir_de_position(position[1],True)!=None:
             self.position_source_forcee=position[1]
         elif status=="prise": #Si déplacement avec prise, changement de joueur:
@@ -260,7 +260,6 @@ class Partie:
 if __name__ == "__main__":
     # Point d'entrée du programme. On initialise une nouvelle partie, et on appelle la méthode jouer().
     print(Damier())
-    
     partie = Partie()
 
     # Si on veut sauvegarder une partie.
